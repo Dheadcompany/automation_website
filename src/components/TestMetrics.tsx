@@ -2,12 +2,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, CheckCircle, XCircle, Clock, Activity } from "lucide-react";
+import { useTestMetrics } from "@/hooks/useTestMetrics";
 
 export const TestMetrics = () => {
-  const metrics = [
+  const { metrics, isLoading } = useTestMetrics();
+
+  const metricsData = [
     {
       title: "Total Tests",
-      value: "1,234",
+      value: metrics.totalTests,
       change: "+12%",
       trend: "up",
       icon: Activity,
@@ -15,7 +18,7 @@ export const TestMetrics = () => {
     },
     {
       title: "Success Rate",
-      value: "94.2%",
+      value: metrics.successRate,
       change: "+2.1%",
       trend: "up",
       icon: CheckCircle,
@@ -23,7 +26,7 @@ export const TestMetrics = () => {
     },
     {
       title: "Failed Tests",
-      value: "72",
+      value: metrics.failedTests,
       change: "-15%",
       trend: "down",
       icon: XCircle,
@@ -31,7 +34,7 @@ export const TestMetrics = () => {
     },
     {
       title: "Avg Response Time",
-      value: "1.2s",
+      value: metrics.avgResponseTime,
       change: "-0.3s",
       trend: "down",
       icon: Clock,
@@ -39,9 +42,29 @@ export const TestMetrics = () => {
     }
   ];
 
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {[...Array(4)].map((_, index) => (
+          <Card key={index} className="border-l-4 border-l-green-500 animate-pulse">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+              <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+              <div className="h-6 bg-gray-200 rounded w-12 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-24"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {metrics.map((metric, index) => {
+      {metricsData.map((metric, index) => {
         const Icon = metric.icon;
         const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown;
         const trendColor = metric.trend === "up" ? "text-green-600" : "text-red-600";

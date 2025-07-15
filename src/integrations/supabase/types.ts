@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      test_results: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          operator: Database["public"]["Enums"]["operator_type"]
+          request_id: string
+          response_time: number
+          service: string
+          session_id: string | null
+          status: Database["public"]["Enums"]["test_status"]
+          test_type: Database["public"]["Enums"]["test_type"]
+          timestamp: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operator: Database["public"]["Enums"]["operator_type"]
+          request_id: string
+          response_time: number
+          service: string
+          session_id?: string | null
+          status: Database["public"]["Enums"]["test_status"]
+          test_type: Database["public"]["Enums"]["test_type"]
+          timestamp?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operator?: Database["public"]["Enums"]["operator_type"]
+          request_id?: string
+          response_time?: number
+          service?: string
+          session_id?: string | null
+          status?: Database["public"]["Enums"]["test_status"]
+          test_type?: Database["public"]["Enums"]["test_type"]
+          timestamp?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "test_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          failed_tests: number | null
+          id: string
+          passed_tests: number | null
+          session_name: string
+          started_at: string
+          total_tests: number | null
+          user_id: string
+          warning_tests: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          failed_tests?: number | null
+          id?: string
+          passed_tests?: number | null
+          session_name: string
+          started_at?: string
+          total_tests?: number | null
+          user_id: string
+          warning_tests?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          failed_tests?: number | null
+          id?: string
+          passed_tests?: number | null
+          session_name?: string
+          started_at?: string
+          total_tests?: number | null
+          user_id?: string
+          warning_tests?: number | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -61,7 +159,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      operator_type: "MTN" | "Airtel" | "Glo" | "9mobile"
+      test_status: "passed" | "failed" | "warning"
+      test_type: "SMS" | "USSD" | "WAP" | "IVR" | "MMS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -188,6 +288,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      operator_type: ["MTN", "Airtel", "Glo", "9mobile"],
+      test_status: ["passed", "failed", "warning"],
+      test_type: ["SMS", "USSD", "WAP", "IVR", "MMS"],
+    },
   },
 } as const

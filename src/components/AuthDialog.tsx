@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Mail, Lock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthDialogProps {
   open: boolean;
@@ -16,36 +16,45 @@ interface AuthDialogProps {
 
 export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const { signIn, signUp } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Mock authentication - in real implementation, you'd use Supabase
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to VAS Testing Portal!",
-      });
+    const { error } = await signIn(email, password);
+    
+    if (error) {
+      setError(error.message);
+    } else {
       onOpenChange(false);
-    }, 1500);
+      setEmail("");
+      setPassword("");
+    }
+    
+    setIsLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Mock signup - in real implementation, you'd use Supabase
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully!",
-      });
+    const { error } = await signUp(email, password);
+    
+    if (error) {
+      setError(error.message);
+    } else {
       onOpenChange(false);
-    }, 1500);
+      setEmail("");
+      setPassword("");
+    }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -62,6 +71,12 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
             Access your professional testing dashboard
           </DialogDescription>
         </DialogHeader>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
 
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -88,6 +103,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                         type="email"
                         placeholder="your@email.com"
                         className="pl-9"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
@@ -101,6 +118,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                         type="password"
                         placeholder="••••••••"
                         className="pl-9"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </div>
@@ -136,6 +155,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                         type="email"
                         placeholder="your@email.com"
                         className="pl-9"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
@@ -149,6 +170,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                         type="password"
                         placeholder="••••••••"
                         className="pl-9"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </div>

@@ -5,18 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, RefreshCw } from "lucide-react";
-
-interface TestResult {
-  id: string;
-  timestamp: string;
-  operator: string;
-  testType: string;
-  service: string;
-  status: "passed" | "failed" | "warning";
-  responseTime: number;
-  errorMessage?: string;
-  requestId: string;
-}
+import { useTestResults } from "@/hooks/useTestResults";
 
 interface TestResultsTableProps {
   filters: {
@@ -28,62 +17,8 @@ interface TestResultsTableProps {
 }
 
 export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
+  const { testResults, isLoading, refetch } = useTestResults(filters);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Mock data - in real implementation, this would come from your API
-  const mockResults: TestResult[] = [
-    {
-      id: "1",
-      timestamp: "2024-01-15 14:30:25",
-      operator: "MTN",
-      testType: "SMS",
-      service: "Premium SMS",
-      status: "passed",
-      responseTime: 1200,
-      requestId: "REQ001"
-    },
-    {
-      id: "2",
-      timestamp: "2024-01-15 14:29:18",
-      operator: "Airtel",
-      testType: "USSD",
-      service: "Balance Check",
-      status: "failed",
-      responseTime: 3500,
-      errorMessage: "Connection timeout",
-      requestId: "REQ002"
-    },
-    {
-      id: "3",
-      timestamp: "2024-01-15 14:28:45",
-      operator: "Glo",
-      testType: "WAP",
-      service: "Content Download",
-      status: "warning",
-      responseTime: 2100,
-      requestId: "REQ003"
-    },
-    {
-      id: "4",
-      timestamp: "2024-01-15 14:27:12",
-      operator: "9mobile",
-      testType: "IVR",
-      service: "Voice Service",
-      status: "passed",
-      responseTime: 900,
-      requestId: "REQ004"
-    },
-    {
-      id: "5",
-      timestamp: "2024-01-15 14:26:33",
-      operator: "MTN",
-      testType: "MMS",
-      service: "Multimedia Message",
-      status: "passed",
-      responseTime: 1800,
-      requestId: "REQ005"
-    }
-  ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -113,13 +48,32 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
     }
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 1000);
+    await refetch();
+    setIsRefreshing(false);
   };
+
+  const formatTimestamp = (timestamp: string) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">Recent Test Results</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -139,52 +93,58 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Timestamp</TableHead>
-                <TableHead>Operator</TableHead>
-                <TableHead>Test Type</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Response Time</TableHead>
-                <TableHead>Request ID</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockResults.map((result) => (
-                <TableRow key={result.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium">
-                    {result.timestamp}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getOperatorColor(result.operator)}>
-                      {result.operator}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{result.testType}</TableCell>
-                  <TableCell>{result.service}</TableCell>
-                  <TableCell>{getStatusBadge(result.status)}</TableCell>
-                  <TableCell>
-                    <span className={result.responseTime > 2000 ? "text-red-600" : "text-green-600"}>
-                      {result.responseTime}ms
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {result.requestId}
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+        {testResults.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No test results found. Run some tests to see data here.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Operator</TableHead>
+                  <TableHead>Test Type</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Response Time</TableHead>
+                  <TableHead>Request ID</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {testResults.map((result) => (
+                  <TableRow key={result.id} className="hover:bg-gray-50">
+                    <TableCell className="font-medium">
+                      {formatTimestamp(result.timestamp)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getOperatorColor(result.operator)}>
+                        {result.operator}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{result.test_type}</TableCell>
+                    <TableCell>{result.service}</TableCell>
+                    <TableCell>{getStatusBadge(result.status)}</TableCell>
+                    <TableCell>
+                      <span className={result.response_time > 2000 ? "text-red-600" : "text-green-600"}>
+                        {result.response_time}ms
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {result.request_id}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
