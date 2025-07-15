@@ -22,15 +22,15 @@ export const useTestResults = (filters: Filters) => {
         .select('*')
         .order('timestamp', { ascending: false });
 
-      // Apply filters
+      // Apply filters with proper type casting
       if (filters.operator) {
-        query = query.eq('operator', filters.operator);
+        query = query.eq('operator', filters.operator as 'MTN' | 'Airtel' | 'Glo' | '9mobile');
       }
       if (filters.testType) {
-        query = query.eq('test_type', filters.testType);
+        query = query.eq('test_type', filters.testType as 'SMS' | 'USSD' | 'WAP' | 'IVR' | 'MMS');
       }
       if (filters.status) {
-        query = query.eq('status', filters.status);
+        query = query.eq('status', filters.status as 'passed' | 'failed' | 'warning');
       }
       if (filters.dateRange) {
         const now = new Date();
