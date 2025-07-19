@@ -1,11 +1,22 @@
-
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Shield, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -25,9 +36,9 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     const { error } = await signIn(email, password);
-    
+
     if (error) {
       setError(error.message);
     } else {
@@ -35,7 +46,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       setEmail("");
       setPassword("");
     }
-    
+
     setIsLoading(false);
   };
 
@@ -43,9 +54,9 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     const { error } = await signUp(email, password);
-    
+
     if (error) {
       setError(error.message);
     } else {
@@ -53,7 +64,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       setEmail("");
       setPassword("");
     }
-    
+
     setIsLoading(false);
   };
 
@@ -89,7 +100,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               <CardHeader>
                 <CardTitle className="text-lg">Welcome Back</CardTitle>
                 <CardDescription>
-                  Sign in to your testing account
+                  Sign in to your testing report account
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -124,8 +135,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                       />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full bg-green-600 hover:bg-green-700"
                     disabled={isLoading}
                   >
@@ -141,7 +152,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               <CardHeader>
                 <CardTitle className="text-lg">Create Account</CardTitle>
                 <CardDescription>
-                  Join the VAS testing platform
+                  Join the VAS testing report platform
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -176,8 +187,8 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                       />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full bg-green-600 hover:bg-green-700"
                     disabled={isLoading}
                   >
@@ -190,7 +201,7 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
         </Tabs>
 
         <div className="text-center text-sm text-gray-500 mt-4">
-          Professional telecom testing platform for Nigerian operators
+          Professional testing report platform for VDL Technologies
         </div>
       </DialogContent>
     </Dialog>
