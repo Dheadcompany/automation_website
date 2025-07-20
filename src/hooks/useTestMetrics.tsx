@@ -10,7 +10,7 @@ export const useTestMetrics = () => {
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       
       const { data: recentTests, error } = await supabase
-        .from('test_results')
+        .from('vas_reports')
         .select('status, response_time')
         .gte('timestamp', yesterday);
 

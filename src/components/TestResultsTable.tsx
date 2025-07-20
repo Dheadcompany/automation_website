@@ -103,12 +103,12 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Timestamp</TableHead>
-                  <TableHead>Operator</TableHead>
-                  <TableHead>Test Type</TableHead>
-                  <TableHead>Service</TableHead>
+                  <TableHead>MSISDN</TableHead>
+                  <TableHead>Test Name</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Response Time</TableHead>
-                  <TableHead>Request ID</TableHead>
+                  <TableHead>Airtime Before</TableHead>
+                  <TableHead>Airtime After</TableHead>
+                  <TableHead>Click ID</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -118,26 +118,20 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
                     <TableCell className="font-medium">
                       {formatTimestamp(result.timestamp)}
                     </TableCell>
-                    <TableCell>
-                      <Badge className={getOperatorColor(result.operator)}>
-                        {result.operator}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{result.test_type}</TableCell>
-                    <TableCell>{result.service}</TableCell>
+                    <TableCell>{result.msisdn}</TableCell>
+                    <TableCell>{result.test_name}</TableCell>
                     <TableCell>{getStatusBadge(result.status)}</TableCell>
+                    <TableCell>{result.airtime_before}</TableCell>
+                    <TableCell>{result.airtime_after}</TableCell>
+                    <TableCell className="font-mono text-sm">{result.click_id}</TableCell>
                     <TableCell>
-                      <span className={result.response_time > 2000 ? "text-red-600" : "text-green-600"}>
-                        {result.response_time}ms
-                      </span>
-                    </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {result.request_id}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      {result.video_url ? (
+                        <a href={result.video_url} download target="_blank" rel="noopener noreferrer">
+                          <Button variant="outline" size="sm">Download Video</Button>
+                        </a>
+                      ) : (
+                        <span className="text-gray-400 text-xs">No Video</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
