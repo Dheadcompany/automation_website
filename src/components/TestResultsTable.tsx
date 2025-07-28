@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, RefreshCw } from "lucide-react";
 import { useTestResults } from "@/hooks/useTestResults";
+import ExportButtons from "./ExportButtons";
 
 interface TestResultsTableProps {
   filters: {
@@ -19,12 +20,22 @@ interface TestResultsTableProps {
 export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
   const { testResults, isLoading, refetch } = useTestResults(filters);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const selectedResult = testResults.find((row) => row.id === selectedRowId) || null;
+
+  useEffect(() => {
+    if (selectedRowId && !testResults.find((row) => row.id === selectedRowId)) {
+      setSelectedRowId(null);
+    }
+  }, [testResults, selectedRowId]);
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status.trim().toLowerCase()) {
       case "passed":
+      case "pass":
         return <Badge className="bg-green-100 text-green-800 border-green-200">Passed</Badge>;
       case "failed":
+      case "fail":
         return <Badge className="bg-red-100 text-red-800 border-red-200">Failed</Badge>;
       case "warning":
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Warning</Badge>;
@@ -80,16 +91,19 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
       <CardHeader>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <CardTitle className="text-lg font-semibold">Recent Test Results</CardTitle>
-          <Button 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-            variant="outline"
-            size="sm"
-            className="mt-2 sm:mt-0"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
+          <div className="flex gap-2 items-center">
+            <Button 
+              onClick={handleRefresh} 
+              disabled={isRefreshing}
+              variant="outline"
+              size="sm"
+              className="mt-2 sm:mt-0"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <ExportButtons selectedResult={selectedResult} />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -102,6 +116,7 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead></TableHead>
                   <TableHead>Timestamp</TableHead>
                   <TableHead>MSISDN</TableHead>
                   <TableHead>Test Name</TableHead>
@@ -114,7 +129,20 @@ export const TestResultsTable = ({ filters }: TestResultsTableProps) => {
               </TableHeader>
               <TableBody>
                 {testResults.map((result) => (
-                  <TableRow key={result.id} className="hover:bg-gray-50">
+                  <TableRow
+                    key={result.id}
+                    className={`hover:bg-gray-50 cursor-pointer ${selectedRowId === result.id ? "bg-green-100 border-2 border-green-500" : ""}`}
+                    onClick={() => setSelectedRowId(result.id)}
+                  >
+                    <TableCell>
+                      <input
+                        type="radio"
+                        checked={selectedRowId === result.id}
+                        onChange={() => setSelectedRowId(result.id)}
+                        className="accent-green-600"
+                        aria-label="Select row"
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">
                       {formatTimestamp(result.timestamp)}
                     </TableCell>

@@ -11,6 +11,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<{ error: any }>;
+  updatePassword: (password: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,6 +71,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return { error };
   };
 
+  const updatePassword = async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({ password });
+    return { error };
+  };
+
+  const sendPasswordResetEmail = async (email: string) => {
+    // Use port 8080 for development to match vite.config.ts
+    const baseUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:8080'
+      : window.location.origin;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${baseUrl}/reset-password`,
+    });
+
+    if (!error) {
+      toast({
+        title: "Password reset email sent!",
+        description: "Please check your email for a link to reset your password.",
+      });
+    }
+
+    return { error };
+  };
+
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
@@ -105,6 +132,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signIn,
     signUp,
     signOut,
+    sendPasswordResetEmail,
+    updatePassword,
   };
 
   return (

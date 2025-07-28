@@ -17,6 +17,7 @@ export const useTestResults = (filters: Filters) => {
   const { data: testResults, isLoading, error, refetch } = useQuery({
     queryKey: ['test-results', filters],
     queryFn: async () => {
+      console.log('Filters used:', filters);
       let query = supabase
         .from('vas_reports')
         .select('*')
@@ -24,13 +25,25 @@ export const useTestResults = (filters: Filters) => {
 
       // Apply filters with proper type casting
       if (filters.operator) {
-        query = query.eq('operator', filters.operator as 'MTN' | 'Airtel' | 'Glo' | '9mobile');
+        // Filter by operator if operator is part of test_name
+        query = query.ilike('test_name', `%${filters.operator}%`);
       }
       if (filters.testType) {
-        query = query.eq('test_type', filters.testType as 'SMS' | 'USSD' | 'WAP' | 'IVR' | 'MMS');
+        // Filter by testType if testType is part of test_name
+        query = query.ilike('test_name', `%${filters.testType}%`);
       }
       if (filters.status) {
-        query = query.eq('status', filters.status as 'passed' | 'failed' | 'warning');
+        // Accept 'PASSED' from UI and match 'PASS' in DB (case-insensitive)
+        const normalizedStatus = filters.status.trim().toLowerCase();
+        if (normalizedStatus === 'passed') {
+          query = query.ilike('status', '%pass%');
+        } else if (normalizedStatus === 'failed') {
+          query = query.ilike('status', '%fail%');
+        } else if (normalizedStatus === 'warning') {
+          query = query.ilike('status', '%warn%');
+        } else {
+          query = query.ilike('status', `%${filters.status}%`);
+        }
       }
       if (filters.dateRange) {
         const now = new Date();
@@ -60,6 +73,11 @@ export const useTestResults = (filters: Filters) => {
       }
 
       const { data, error } = await query;
+      if (data) {
+        const uniqueStatuses = Array.from(new Set(data.map((row: any) => row.status)));
+        console.log('Unique status values in vas_reports:', uniqueStatuses);
+      }
+      console.log('Results returned:', data);
       
       if (error) throw error;
       return data as TestResult[];
