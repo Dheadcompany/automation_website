@@ -49,14 +49,27 @@ function generatePDF(report) {
     "Airtime Before",
     "Airtime After",
   ];
+<<<<<<< HEAD
+  const formatNaira = (value) => {
+    if (!value) return "";
+    const str = String(value).trim();
+    return str.toLowerCase().endsWith("naira") ? str : `${str} naira`;
+  };
+=======
+>>>>>>> 6fb66bd9c2d8ea52d3af0c1c491d2014326bc54c
   const tableRows = [
     [
       report.testName || "",
       report.status || "",
       report.msisdn || "",
       report.clickId || "",
+<<<<<<< HEAD
+      formatNaira(report.airtimeBefore),
+      formatNaira(report.airtimeAfter),
+=======
       report.airtimeBefore ? `${report.airtimeBefore} naira` : "",
       report.airtimeAfter ? `${report.airtimeAfter} naira` : "",
+>>>>>>> 6fb66bd9c2d8ea52d3af0c1c491d2014326bc54c
     ],
   ];
   doc.autoTable({
