@@ -49,14 +49,19 @@ function generatePDF(report) {
     "Airtime Before",
     "Airtime After",
   ];
+  const formatNaira = (value) => {
+    if (!value) return "";
+    const str = String(value).trim();
+    return str.toLowerCase().endsWith("naira") ? str : `${str} naira`;
+  };
   const tableRows = [
     [
       report.testName || "",
       report.status || "",
       report.msisdn || "",
       report.clickId || "",
-      report.airtimeBefore ? `${report.airtimeBefore} naira` : "",
-      report.airtimeAfter ? `${report.airtimeAfter} naira` : "",
+      formatNaira(report.airtimeBefore),
+      formatNaira(report.airtimeAfter),
     ],
   ];
   doc.autoTable({
