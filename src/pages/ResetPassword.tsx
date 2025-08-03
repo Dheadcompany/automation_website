@@ -47,13 +47,38 @@ const ResetPassword = () => {
     }
   
     try {
-      // Use the access token directly to update the password without setting session
-      const { error: updateError } = await supabase.auth.updateUser(
-        { password },
+      // Create a temporary supabase client instance for this operation
+      const { createClient } = await import('@supabase/supabase-js');
+      const tempClient = createClient(
+        'https://aylkhplvjjqwnggdtzdc.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5bGtocGx2ampxd25nZ2R0emRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzMxODUsImV4cCI6MjA2NzY0OTE4NX0.fiotGdK3qFdXYQByiBx6YID9FfiP5I6CGjlg2ySdCVk',
         {
-          accessToken: resetTokens.accessToken
+          auth: {
+            storage: {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {}
+            },
+            persistSession: false,
+            autoRefreshToken: false,
+          },
         }
       );
+  
+      // Set session on temporary client
+      const { data: { session }, error: sessionError } = await tempClient.auth.setSession({
+        access_token: resetTokens.accessToken,
+        refresh_token: resetTokens.refreshToken,
+      });
+  
+      if (sessionError || !session) {
+        setError('Invalid or expired reset link. Please request a new password reset.');
+        setLoading(false);
+        return;
+      }
+  
+      // Update password using temporary client
+      const { error: updateError } = await tempClient.auth.updateUser({ password });
   
       if (updateError) {
         setError(updateError.message);

@@ -1,4 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import ExportButtons from "../components/ExportButtons";
+import TestResultsTable from "../components/TestResultsTable";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,9 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TestResultsTable } from "@/components/TestResultsTable";
 import { TestMetrics } from "@/components/TestMetrics";
-import ExportButtons from "@/components/ExportButtons";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AuthDialog } from "@/components/AuthDialog";
 import {
@@ -32,6 +32,7 @@ const Index = () => {
     status: "",
     dateRange: "",
   });
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const { user, loading, signOut } = useAuth();
 
@@ -243,7 +244,7 @@ const Index = () => {
               </p>
             </div>
             <div className="w-full lg:w-auto flex justify-center lg:justify-end">
-              <ExportButtons />
+              <ExportButtons selectedResult={selectedRow} />
             </div>
           </div>
 
@@ -256,7 +257,7 @@ const Index = () => {
           </div>
 
           {/* Results Table */}
-          <TestResultsTable filters={filters} />
+          <TestResultsTable filters={filters} selectedRow={selectedRow} setSelectedRow={setSelectedRow} />
         </div>
       </section>
     </div>

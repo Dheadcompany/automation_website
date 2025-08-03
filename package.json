@@ -41,16 +41,23 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@supabase/supabase-js": "^2.51.0",
     "@tanstack/react-query": "^5.56.2",
+    "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.1",
     "embla-carousel-react": "^8.3.0",
+    "express": "^5.1.0",
     "input-otp": "^1.2.4",
-    "jspdf": "^3.0.1",
-    "jspdf-autotable": "^5.0.2",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.25",
     "lucide-react": "^0.462.0",
+    "moment": "^2.30.1",
     "next-themes": "^0.3.0",
+    "nodemailer": "^7.0.5",
+    "papaparse": "^5.5.3",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -82,5 +89,18 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
-  }
+  },
+  "description": "<<<<<<< HEAD\r # Welcome to your Lovable project",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dheadcompany/project_alpha.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dheadcompany/project_alpha/issues"
+  },
+  "homepage": "https://github.com/Dheadcompany/project_alpha#readme"
 }

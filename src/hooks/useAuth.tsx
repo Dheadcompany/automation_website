@@ -35,7 +35,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  // Use window.location directly for SSR safety
+  const location = typeof window !== 'undefined' ? window.location : { hash: '', pathname: '' };
+
   useEffect(() => {
+    // Check if we're on a recovery link
+    const hashParams = new URLSearchParams(location.hash.substring(1));
+    const isRecovery = hashParams.get('type') === 'recovery';
+
+    if (isRecovery && location.pathname === '/reset-password') {
+      // Don't set session/user while on recovery page
+      setLoading(false);
+      return;
+    }
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -53,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [location.hash, location.pathname]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -98,7 +111,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
     const { error } = await supabase.auth.signUp({
       email,
       password,
