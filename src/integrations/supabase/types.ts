@@ -14,6 +14,10 @@ export type Database = {
     Tables: {
       vas_reports: {
         Row: {
+          testType: any;
+          operator_name: any;
+          Operator: any;
+          operator: any;
           id: string;
           test_name: string;
           status: string;

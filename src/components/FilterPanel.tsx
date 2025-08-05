@@ -56,7 +56,7 @@ export const FilterPanel = ({ filters, onFiltersChange }: FilterPanelProps) => {
                 <SelectValue placeholder="Operator" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="MTN">MTN</SelectItem>
+                <SelectItem value="MTN">Mtn</SelectItem>
                 <SelectItem value="Airtel">Airtel</SelectItem>
                 <SelectItem value="Glo">Glo</SelectItem>
                 <SelectItem value="9mobile">9mobile</SelectItem>

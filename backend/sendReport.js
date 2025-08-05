@@ -49,27 +49,19 @@ function generatePDF(report) {
     "Airtime Before",
     "Airtime After",
   ];
-<<<<<<< HEAD
   const formatNaira = (value) => {
     if (!value) return "";
     const str = String(value).trim();
     return str.toLowerCase().endsWith("naira") ? str : `${str} naira`;
   };
-=======
->>>>>>> 6fb66bd9c2d8ea52d3af0c1c491d2014326bc54c
   const tableRows = [
     [
       report.testName || "",
       report.status || "",
       report.msisdn || "",
       report.clickId || "",
-<<<<<<< HEAD
       formatNaira(report.airtimeBefore),
       formatNaira(report.airtimeAfter),
-=======
-      report.airtimeBefore ? `${report.airtimeBefore} naira` : "",
-      report.airtimeAfter ? `${report.airtimeAfter} naira` : "",
->>>>>>> 6fb66bd9c2d8ea52d3af0c1c491d2014326bc54c
     ],
   ];
   doc.autoTable({
@@ -106,7 +98,8 @@ async function sendReport(req, res) {
     return res.status(400).json({ error: "Missing fields" });
 
   // Move this line here so it's available everywhere
-  let rawTimestamp = report.timestamp || report.date || new Date().toISOString();
+  let rawTimestamp =
+    report.timestamp || report.date || new Date().toISOString();
 
   try {
     if (channel === "email") {
@@ -117,7 +110,10 @@ async function sendReport(req, res) {
       let formattedTimestamp = moment(rawTimestamp, moment.ISO_8601).isValid()
         ? moment(rawTimestamp, moment.ISO_8601).format("DD/MM/YYYY, h:mm:ss A")
         : rawTimestamp;
-      let emailBody = `Test Name: ${report.testName}\nStatus: ${report.status}\nMSISDN: ${report.msisdn}\nTimestamp: ${formattedTimestamp}\nClick ID: ${report.clickId}\nAirtime Before: ${report.airtimeBefore}\nAirtime After: ${report.airtimeAfter}\nVideo URL: ${report.videoRecording}`;
+      let emailBody = `Test Name: ${report.testName}\nStatus: ${report.status}\nMSISDN: ${report.msisdn}\nTimestamp: ${formattedTimestamp}\nClick ID: ${report.clickId}\nAirtime Before: ${report.airtimeBefore}\nAirtime After: ${report.airtimeAfter}`;
+      if (report.videoRecording) {
+        emailBody += `\nVideo URL: ${report.videoRecording}`;
+      }
       let subject = `Test Report: ${report.testName}`;
       if (format === "pdf") {
         attachment = Buffer.from(generatePDF(report));
@@ -129,7 +125,7 @@ async function sendReport(req, res) {
       try {
         const mailOptions = {
           from: process.env.ZOHO_EMAIL,
-          to: "nelson@vdltechnologies.com,   technical@vdltechnologies.com,product@vdltechnologies.com",
+          to: "technicalteam@vdltechnologies.com,product@vdltechnologies.com",
           subject: subject,
           text: emailBody,
           attachments: [
@@ -167,7 +163,9 @@ async function sendReport(req, res) {
       // Use formattedTimestamp in both PDF and email body
       const formattedDate = rawTimestamp
         ? moment(rawTimestamp, moment.ISO_8601).isValid()
-          ? moment(rawTimestamp, moment.ISO_8601).format("DD/MM/YYYY, h:mm:ss A")
+          ? moment(rawTimestamp, moment.ISO_8601).format(
+              "DD/MM/YYYY, h:mm:ss A"
+            )
           : moment().format("DD/MM/YYYY, h:mm:ss A")
         : moment().format("DD/MM/YYYY, h:mm:ss A");
       const testName = report.testName || report.test_name || "-";
